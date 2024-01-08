@@ -1,16 +1,26 @@
 # # Python Project on Currency Converter
 
+# Prerequisites
+The currency converter project in python requires you to have basic knowledge of python programming and the pygame library.
+tkinter – For User Interface (UI)
+requests – to get url
+
 import requests
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 
+# Real-time Exchange rates
+To get real-time exchange rates, we will use: https://api.exchangerate-api.com/v4/latest/USD
+
+# Create the CurrencyConverter class:
+Now we will create the CurrencyConverter class which will get the real-time exchange rate and convert the currency and return the converted amount.
 
 class RealTimeCurrencyConverter():
     def __init__(self,url):
             self.data = requests.get(url).json()
             self.currencies = self.data['rates']
-
+# Convert() method:
     def convert(self, from_currency, to_currency, amount): 
         initial_amount = amount 
         if from_currency != 'USD' : 
@@ -19,7 +29,7 @@ class RealTimeCurrencyConverter():
         # limiting the precision to 4 decimal places 
         amount = round(amount * self.currencies[to_currency], 4) 
         return amount
-
+# Now let’s create a UI for the currency converter
 class App(tk.Tk):
 
     def __init__(self, converter):
@@ -28,6 +38,7 @@ class App(tk.Tk):
         self.currency_converter = converter
 
         #self.configure(background = 'blue')
+        # Create the Converter
         self.geometry("500x200")
         
         # Label
@@ -38,7 +49,7 @@ class App(tk.Tk):
 
         self.intro_label.place(x = 10 , y = 5)
         self.date_label.place(x = 160, y= 50)
-
+ # Create the entry box for the amount and options of currency in the frame. So That users can enter the amount and choose among currencies.
         # Entry box
         valid = (self.register(self.restrictNumberOnly), '%d', '%P')
         self.amount_field = Entry(self,bd = 3, relief = tk.RIDGE, justify = tk.CENTER,validate='key', validatecommand=valid)
@@ -66,7 +77,9 @@ class App(tk.Tk):
         self.convert_button = Button(self, text = "Convert", fg = "black", command = self.perform) 
         self.convert_button.config(font=('Courier', 10, 'bold'))
         self.convert_button.place(x = 225, y = 135)
+# perform() method:
 
+# The perform method will take the user input and convert the amount into the desired currency and display it on the converted_amount entry box.
     def perform(self):
         amount = float(self.amount_field.get())
         from_curr = self.from_currency_variable.get()
@@ -76,11 +89,15 @@ class App(tk.Tk):
         converted_amount = round(converted_amount, 2)
 
         self.converted_amount_field_label.config(text = str(converted_amount))
+       #  RestrictNumberOnly() method:
+       # create a restriction in our entry box. So that user can enter only a number in Amount Field
     
     def restrictNumberOnly(self, action, string):
         regex = re.compile(r"[0-9,]*?(\.)?[0-9,]*$")
         result = regex.match(string)
         return (string == "" or (string.count('.') <= 1 and result is not None))
+        
+        # Let’s create the main function
 
 if __name__ == '__main__':
     url = 'https://api.exchangerate-api.com/v4/latest/USD'
